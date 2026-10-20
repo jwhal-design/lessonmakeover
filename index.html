@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Extreme Makeover: Lesson Edition</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚌</text></svg>">
+<style>
+:root{
+  --bg:#e6ecf4; --paper:#ffffff; --ink:#1d2433; --muted:#5a6375; --line:#d3dae5;
+  --navy:#1d2433; --bus:#f5c518; --bus-dark:#b8930e;
+  --red:#c8102e; --green:#1d7a3a; --grey:#7b8494;
+  --sc:#d9545e; --ck:#e9a52b; --ib:#6f9d33; --rw:#3f8fc8;
+  --sc-bg:#f6e0e0; --ck-bg:#faedcc; --ib-bg:#e4ecd4; --rw-bg:#dbe8f4;
+  --teacher:#2a3b5e; --student:#8a5a00;
+  --slab:Rockwell,"Rockwell Nova","Roboto Slab","Zilla Slab",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#10151f; --paper:#1b2230; --ink:#eef1f6; --muted:#a8b0c0; --line:#343e55;
+    --red:#ff5a6e; --green:#4cc777; --grey:#9aa3b3;
+    --sc-bg:#3a2427; --ck-bg:#3a311d; --ib-bg:#29331f; --rw-bg:#1e2e3d;
+    --teacher:#b9c9ec; --student:#f2c25f;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--sans);font-size:17px;line-height:1.45;color:var(--ink);background:var(--bg)}
+button{font:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:3px solid var(--bus);outline-offset:3px}
+
+.bar{background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 20px;flex-wrap:wrap}
+.bar h1{margin:0;font-family:var(--slab);font-size:22px;color:var(--bus);line-height:1.2}
+.bar .meta{display:flex;gap:16px;align-items:center;font-weight:700}
+.dots{display:flex;gap:6px}
+.dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--bus);display:block}
+.dots i.done{background:var(--bus)}
+.dots i.now{background:#fff;border-color:#fff}
+.small-btn{background:transparent;border:2px solid #fff;color:#fff;border-radius:6px;padding:4px 12px;font-size:15px;font-weight:700}
+
+.wrap{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.screen{display:none}
+.screen.on{display:block}
+
+.btn{background:var(--bus);color:#1d2433;border:0;border-radius:10px;padding:14px 26px;font-weight:800;font-size:20px;box-shadow:0 5px 0 var(--bus-dark)}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--bus-dark)}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none}
+.btn.alt{background:transparent;color:var(--ink);border:2px solid var(--ink);box-shadow:none}
+
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center;padding:20px 0}
+.marquee{margin:0;font-family:var(--slab);line-height:1}
+.marquee .big{display:block;font-size:clamp(54px,7.5vw,96px);color:var(--ink)}
+.marquee .tag{display:inline-block;margin-top:16px;font-size:clamp(24px,3vw,34px);background:var(--bus);color:#1d2433;padding:6px 16px;transform:rotate(-2deg);box-shadow:0 5px 0 var(--bus-dark)}
+.pitch{font-size:20px;max-width:30em;margin:26px 0 22px}
+.hero .actions{display:flex;gap:14px;flex-wrap:wrap}
+.hero svg{width:100%;height:auto;display:block;border-radius:14px}
+
+.game{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(330px,1fr);gap:20px;align-items:start}
+.lesson-head{margin-bottom:10px}
+.lesson-head .kicker{margin:0;font-weight:700;color:var(--muted)}
+.lesson-head h2{margin:2px 0 4px;font-family:var(--slab);font-size:30px;line-height:1.15}
+.lesson-head .before{margin:0 0 8px;font-size:17px;max-width:46em}
+.blueprint{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-weight:700;font-size:15px}
+.blueprint span.rm{color:#fff;border-radius:5px;padding:2px 9px}
+.scene-wrap{border-radius:14px;overflow:hidden;box-shadow:0 6px 0 rgba(0,0,0,.15)}
+#scene{width:100%;height:auto;display:block}
+
+.barb{display:flex;gap:12px;align-items:flex-start;margin-top:14px}
+.barb .avatar{flex:0 0 auto;width:56px;height:56px;border-radius:50%;background:var(--navy);display:grid;place-items:center;font-size:28px}
+.barb .bubble{position:relative;background:var(--paper);border-radius:12px;padding:10px 14px;box-shadow:0 3px 0 rgba(0,0,0,.12);flex:1}
+.barb .bubble::before{content:"";position:absolute;left:-10px;top:18px;border:10px solid transparent;border-right-color:var(--paper);border-left:0}
+.barb .who{font-weight:800;font-size:14px;color:var(--muted);margin:0}
+.barb .says{margin:2px 0 0;font-size:18px}
+.bubble.pop{animation:pop .3s ease-out}
+@keyframes pop{0%{transform:scale(.96)}60%{transform:scale(1.02)}100%{transform:scale(1)}}
+
+.panel{background:var(--paper);border-radius:14px;padding:16px;box-shadow:0 6px 0 rgba(0,0,0,.12)}
+.budget{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.budget .lbl{font-weight:700;color:var(--muted)}
+.budget .amt{font-family:var(--slab);font-size:40px;line-height:1}
+.meter{height:12px;border-radius:6px;background:var(--line);margin:8px 0 6px;overflow:hidden}
+.meter span{display:block;height:100%;background:var(--green);transition:width .4s}
+.goal{margin:0 0 12px;font-size:15px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{display:flex;flex-direction:column;gap:4px;text-align:left;background:var(--paper);border:2px solid var(--line);border-radius:10px;padding:10px 12px;transition:transform .12s,border-color .12s}
+.card:hover{transform:translateY(-2px);border-color:var(--ink)}
+.card .top{display:flex;align-items:center;gap:6px}
+.card .icon{font-size:24px;line-height:1;margin-right:auto}
+.card .price{font-weight:800;background:var(--navy);color:#fff;border-radius:6px;padding:1px 8px;font-size:15px}
+.card h3{margin:2px 0 0;font-family:var(--slab);font-size:18px;line-height:1.15}
+.card p{margin:0;font-size:15px;line-height:1.35}
+.card .side{margin-top:auto;padding-top:4px;font-weight:800;font-size:13px}
+.card .side.T{color:var(--teacher)} .card .side.S{color:var(--student)}
+.card .fx{align-self:flex-start;font-size:13px;font-weight:800;color:#fff;border-radius:4px;padding:1px 7px}
+.card.owned{border-width:3px;padding:9px 11px}
+.card.owned.good{border-color:var(--green)}
+.card.owned.bad{border-color:var(--red)}
+.card.owned.meh{border-color:var(--grey)}
+.card.owned .price{background:var(--grey)}
+.card.pricey{opacity:.45}
+.card.shake{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.bus-row{margin-top:14px}
+.bus-row .btn{width:100%}
+
+.result .stars{font-size:46px;line-height:1;letter-spacing:4px;color:var(--bus)}
+.result .stars .dim{color:var(--line)}
+.result h3{font-family:var(--slab);font-size:28px;margin:6px 0 4px}
+.result .verdict{margin:0 0 12px;font-size:17px}
+.checks{list-style:none;margin:0 0 12px;padding:0}
+.checks li{display:grid;grid-template-columns:28px 1fr;gap:6px;padding:7px 0;border-top:1px solid var(--line);font-size:15px}
+.checks .mk{font-weight:900;font-size:18px}
+.checks .ok{color:var(--green)} .checks .no{color:var(--red)} .checks .eh{color:var(--grey)}
+.checks b{display:block;font-size:16px}
+details{border-top:1px solid var(--line);padding-top:8px;margin-bottom:14px}
+summary{cursor:pointer;font-weight:800}
+details p{font-size:15px;margin:8px 0}
+
+.final{max-width:860px;margin:10px auto;text-align:center}
+.final .big{font-family:var(--slab);font-size:110px;line-height:1;margin:4px 0}
+.final h2{font-family:var(--slab);font-size:36px;margin:0}
+.final .verdict{font-size:19px;max-width:34em;margin:8px auto 24px}
+.recap{display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left;margin:16px 0}
+.recap div{border-left:8px solid;border-radius:8px;padding:10px 14px}
+.recap h3{font-family:var(--slab);margin:0 0 4px;font-size:19px}
+.recap p{margin:0;font-size:16px}
+.final .note{font-size:18px;margin:0 auto 24px;max-width:36em}
+
+/* scene states */
+.base{fill:#d9dce1}
+.paint{opacity:0;transition:opacity .5s}
+.rlabel{fill:#1d2433;font-family:var(--slab);font-weight:700;font-size:18px;transition:fill .4s}
+.offnote{fill:#6b7280;font-family:var(--sans);font-style:italic;font-size:14px}
+.room.off .base{fill:#ece9e2}
+.room.off .rlabel{fill:#9aa0a8}
+.room.off.built .paint{opacity:.55}
+.room.off.built .rlabel{fill:#1d2433}
+.room.bp .base{fill:#fbfbfb}
+.room.bp .paint{opacity:.5}
+.room.bp.up .paint{opacity:1}
+.room.bp.up .rlabel{fill:#fff}
+.room.bp.dmg .paint{opacity:.18}
+.crack{opacity:0;transition:opacity .3s}
+.room.dmg .crack{opacity:1}
+.spark{opacity:0;transition:opacity .4s}
+.room.up .spark{opacity:1;animation:twinkle 1.6s ease-in-out infinite}
+@keyframes twinkle{50%{opacity:.35}}
+.stamp{opacity:0;transform-box:fill-box;transform-origin:center;transform:rotate(-10deg)}
+.stamp.show{animation:thud .35s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes thud{from{opacity:0;transform:rotate(-10deg) scale(2.4)}to{opacity:1;transform:rotate(-10deg) scale(1)}}
+#roof{transition:fill .6s}
+#flowers{opacity:0;transition:opacity .6s} #flowers.on{opacity:1}
+#deadplant{transition:opacity .6s} #deadplant.off{opacity:0}
+#bus{transition:transform 1.3s cubic-bezier(.55,0,.3,1)}
+#chant{opacity:0;transform-box:fill-box;transform-origin:center}
+#chant.show{animation:chant .9s ease-out forwards}
+@keyframes chant{0%{opacity:0;transform:scale(.3) rotate(-4deg)}35%{opacity:1;transform:scale(1.12) rotate(2deg)}55%{transform:scale(.96) rotate(-1deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+#crowd,#reaction{opacity:0;transition:opacity .5s}
+#crowd.show,#reaction.show{opacity:1}
+#crowd.cheer .kid{animation:hop .5s ease-in-out infinite alternate}
+#crowd.cheer .kid:nth-child(2n){animation-delay:.25s}
+@keyframes hop{to{transform:translateY(-8px)}}
+
+dialog{border:0;border-radius:14px;padding:0;max-width:960px;width:calc(100% - 32px);background:var(--paper);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+dialog::backdrop{background:rgba(10,20,40,.7)}
+.cb-head{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:var(--navy);color:#fff}
+.cb-head h2{margin:0;font-family:var(--slab);font-size:24px;color:var(--bus)}
+.cb-body{padding:16px 20px 22px;max-height:75vh;overflow:auto}
+.cb-body .intro{margin:0 0 12px;color:var(--muted)}
+.cb-sec{border-left:8px solid;border-radius:8px;padding:12px 16px;margin-bottom:12px}
+.cb-sec h3{margin:0 0 8px;font-family:var(--slab);font-size:20px}
+.cb-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cb-cols h4{margin:0 0 4px;font-size:15px}
+.cb-cols p{margin:0 0 6px;font-size:15px}
+
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:20}
+@media (max-width:900px){.hero,.game{grid-template-columns:1fr}.recap,.cb-cols{grid-template-columns:1fr}}
+@media (max-width:460px){.cards{grid-template-columns:1fr}}
+@media (prefers-reduced-motion: reduce){*,*::before{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important;transition-delay:0s!important}}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <h1>Extreme Makeover: Lesson Edition</h1>
+  <div class="meta">
+    <div class="dots" id="dots" aria-label="Progress"></div>
+    <span id="scoreLabel">Stars: 0</span>
+    <button class="small-btn" id="openCode">Code book</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section class="screen on" id="s-title">
+  <div class="hero">
+    <div>
+      <h2 class="marquee"><span class="big">Extreme Makeover</span><span class="tag">Lesson Edition</span></h2>
+      <p class="pitch">Three lessons, each already built around some of the four rooms of authentic tech use. Spend $10K on tech that makes those rooms better. Some tech does. Some tech knocks out a wall. Barb the inspector is watching.</p>
+      <div class="actions">
+        <button class="btn" id="start">Start the makeover</button>
+        <button class="btn alt" id="peek">Read the code first</button>
+      </div>
+    </div>
+    <svg viewBox="0 0 800 430" aria-hidden="true">
+      <rect width="800" height="430" fill="#8ec5ef"/>
+      <circle cx="680" cy="70" r="36" fill="#ffe27a"/>
+      <rect y="380" width="800" height="50" fill="#7cb342"/>
+      <polygon points="180,165 400,62 620,165" fill="#7a6f66" stroke="#5a514a" stroke-width="6" stroke-linejoin="round"/>
+      <rect x="200" y="160" width="400" height="220" fill="#5a514a"/>
+      <g transform="translate(150,0)">
+        <rect x="0" y="148" width="500" height="224" rx="18" fill="#f5c518" stroke="#1d2433" stroke-width="5"/>
+        <g fill="#cfe6f7" stroke="#1d2433" stroke-width="3"><rect x="22" y="168" width="52" height="72" rx="4"/><rect x="88" y="168" width="52" height="72" rx="4"/><rect x="154" y="168" width="52" height="72" rx="4"/><rect x="220" y="168" width="52" height="72" rx="4"/><rect x="286" y="168" width="52" height="72" rx="4"/><rect x="352" y="168" width="52" height="72" rx="4"/><rect x="418" y="168" width="60" height="72" rx="4"/></g>
+        <g><circle cx="48" cy="222" r="12" fill="#c68b59"/><circle cx="114" cy="222" r="12" fill="#f1c27d"/><circle cx="180" cy="222" r="12" fill="#8d5524"/><circle cx="246" cy="222" r="12" fill="#f1c27d"/><circle cx="312" cy="222" r="12" fill="#c68b59"/><circle cx="378" cy="222" r="12" fill="#8d5524"/></g>
+        <rect x="0" y="262" width="500" height="10" fill="#1d2433"/>
+        <text x="250" y="326" text-anchor="middle" font-family="Rockwell,Georgia,serif" font-weight="900" font-size="38" fill="#1d2433">LESSON EDITION</text>
+        <circle cx="95" cy="374" r="28" fill="#1d2433"/><circle cx="95" cy="374" r="11" fill="#c9c9c9"/>
+        <circle cx="405" cy="374" r="28" fill="#1d2433"/><circle cx="405" cy="374" r="11" fill="#c9c9c9"/>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<section class="screen" id="s-game">
+  <div class="game">
+    <div>
+      <div class="lesson-head">
+        <p class="kicker" id="kicker"></p>
+        <h2 id="lTitle"></h2>
+        <p class="before" id="lBefore"></p>
+        <div class="blueprint" id="blueprint"></div>
+      </div>
+      <div class="scene-wrap">
+        <svg id="scene" viewBox="0 0 800 430" role="img" aria-label="The lesson as a house with four rooms.">
+          <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fbbe9"/><stop offset="1" stop-color="#d6ebfa"/></linearGradient></defs>
+          <rect width="800" height="430" fill="url(#sky)"/>
+          <circle cx="80" cy="66" r="32" fill="#ffe27a"/>
+          <g fill="#fff" opacity=".9"><ellipse cx="680" cy="60" rx="46" ry="16"/><ellipse cx="710" cy="48" rx="28" ry="16"/><ellipse cx="250" cy="40" rx="38" ry="12"/></g>
+          <rect y="380" width="800" height="50" fill="#7cb342"/>
+          <polygon points="636,380 800,380 800,430 612,430" fill="#a3a3a3"/>
+          <rect x="300" y="78" width="30" height="50" fill="#5a514a"/>
+          <polygon id="roof" points="180,165 400,62 620,165" fill="#7a6f66" stroke="#5a514a" stroke-width="6" stroke-linejoin="round"/>
+          <rect x="200" y="160" width="400" height="220" fill="#5a514a"/>
+          <g id="rooms"></g>
+          <g id="deadplant"><polygon points="96,400 124,400 120,382 100,382" fill="#8d6e63"/><path d="M110 382 L106 360 M110 382 L118 364 M106 360 L100 356" stroke="#6d5a4a" stroke-width="3" fill="none"/></g>
+          <g id="flowers"><polygon points="96,400 124,400 120,382 100,382" fill="#8d6e63"/><path d="M110 382 L110 356 M110 382 L100 362 M110 382 L120 362" stroke="#2e7d32" stroke-width="3"/><circle cx="110" cy="352" r="7" fill="#d9545e"/><circle cx="99" cy="359" r="6" fill="#e9a52b"/><circle cx="121" cy="359" r="6" fill="#3f8fc8"/></g>
+          <g id="crowd"></g>
+          <g id="reaction">
+            <rect x="606" y="290" width="184" height="56" rx="12" fill="#fff" stroke="#1d2433" stroke-width="3"/>
+            <polygon points="640,344 630,366 656,344" fill="#fff" stroke="#1d2433" stroke-width="3" stroke-linejoin="round"/>
+            <rect x="633" y="340" width="26" height="6" fill="#fff"/>
+            <text id="reactText" x="698" y="325" text-anchor="middle" font-family="Rockwell,Georgia,serif" font-weight="900" font-size="15" fill="#1d2433"></text>
+          </g>
+          <g id="bus" style="transform:translate(-620px,0)">
+            <rect x="0" y="148" width="500" height="224" rx="18" fill="#f5c518" stroke="#1d2433" stroke-width="5"/>
+            <g fill="#cfe6f7" stroke="#1d2433" stroke-width="3"><rect x="22" y="168" width="52" height="72" rx="4"/><rect x="88" y="168" width="52" height="72" rx="4"/><rect x="154" y="168" width="52" height="72" rx="4"/><rect x="220" y="168" width="52" height="72" rx="4"/><rect x="286" y="168" width="52" height="72" rx="4"/><rect x="352" y="168" width="52" height="72" rx="4"/><rect x="418" y="168" width="60" height="72" rx="4"/></g>
+            <g><circle cx="48" cy="222" r="12" fill="#c68b59"/><circle cx="114" cy="222" r="12" fill="#f1c27d"/><circle cx="180" cy="222" r="12" fill="#8d5524"/><circle cx="246" cy="222" r="12" fill="#f1c27d"/><circle cx="312" cy="222" r="12" fill="#c68b59"/><circle cx="378" cy="222" r="12" fill="#8d5524"/></g>
+            <rect x="0" y="262" width="500" height="10" fill="#1d2433"/>
+            <text x="250" y="326" text-anchor="middle" font-family="Rockwell,Georgia,serif" font-weight="900" font-size="38" fill="#1d2433">LESSON EDITION</text>
+            <circle cx="95" cy="374" r="28" fill="#1d2433"/><circle cx="95" cy="374" r="11" fill="#c9c9c9"/>
+            <circle cx="405" cy="374" r="28" fill="#1d2433"/><circle cx="405" cy="374" r="11" fill="#c9c9c9"/>
+          </g>
+          <g id="chant">
+            <rect x="160" y="14" width="480" height="72" rx="10" fill="#c8102e" stroke="#fff" stroke-width="4"/>
+            <text x="400" y="65" text-anchor="middle" font-family="Rockwell,Georgia,serif" font-weight="900" font-size="44" fill="#fff">MOVE THAT BUS!</text>
+          </g>
+        </svg>
+      </div>
+      <div class="barb">
+        <div class="avatar" aria-hidden="true">📋</div>
+        <div class="bubble" id="bubble"><p class="who">Barb, building inspector</p><p class="says" id="barbSays" aria-live="polite"></p></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div id="shop">
+        <div class="budget"><span class="lbl">Budget left</span><span class="amt" id="amt">$10K</span></div>
+        <div class="meter"><span id="meter" style="width:100%"></span></div>
+        <p class="goal">Buy tech that makes the blueprint rooms better. Click a card to buy it. Click again to return it ($1K restocking fee).</p>
+        <div class="cards" id="cards"></div>
+        <div class="bus-row"><button class="btn" id="busBtn" disabled>Move that bus!</button></div>
+      </div>
+      <div id="result" class="result" hidden></div>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="s-final">
+  <div class="final">
+    <p style="margin:0;font-weight:700;color:var(--muted)">Final tally</p>
+    <div class="big" id="fScore"></div>
+    <h2 id="fTitle"></h2>
+    <p class="verdict" id="fBarb"></p>
+    <p class="note">Not every lesson needs all four rooms. The question is whether the tech makes the rooms you already have better, or quietly knocks out a wall.</p>
+    <div class="recap">
+      <div style="border-color:var(--sc);background:var(--sc-bg)"><h3>Student-Centered Learning</h3><p>Students make real choices, work together, and own their learning.</p></div>
+      <div style="border-color:var(--ck);background:var(--ck-bg)"><h3>Construction of Knowledge</h3><p>Students build new understanding instead of copying old answers.</p></div>
+      <div style="border-color:var(--ib);background:var(--ib-bg)"><h3>Inquiry-Based Learning</h3><p>Open-ended questions, research, and real discussion drive the work.</p></div>
+      <div style="border-color:var(--rw);background:var(--rw-bg)"><h3>Real-World Connections</h3><p>The work connects to students' lives and reaches an audience beyond the teacher.</p></div>
+    </div>
+    <button class="btn" id="again">Play again</button>
+  </div>
+</section>
+</main>
+
+<dialog id="codebook" aria-labelledby="cbTitle">
+  <div class="cb-head"><h2 id="cbTitle">The Building Code</h2><button class="small-btn" id="closeCode">Close</button></div>
+  <div class="cb-body">
+    <p class="intro">From K20's Authentic Use of Technology. Every room has teacher moves and student moves.</p>
+    <div id="cbSecs"></div>
+  </div>
+</dialog>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+const ROOMS={
+  SC:{n:1,name:"Student-Centered Learning",short:"Student-Centered",l1:"Student-",l2:"Centered",color:"var(--sc)",hex:"#d9545e",bg:"var(--sc-bg)",x:202,y:162},
+  CK:{n:2,name:"Construction of Knowledge",short:"Construction",l1:"Construction",l2:"of Knowledge",color:"var(--ck)",hex:"#e9a52b",bg:"var(--ck-bg)",x:402,y:162},
+  IB:{n:3,name:"Inquiry-Based Learning",short:"Inquiry",l1:"Inquiry-",l2:"Based",color:"var(--ib)",hex:"#6f9d33",bg:"var(--ib-bg)",x:202,y:272},
+  RW:{n:4,name:"Real-World Connections",short:"Real-World",l1:"Real-World",l2:"Connections",color:"var(--rw)",hex:"#3f8fc8",bg:"var(--rw-bg)",x:402,y:272}
+};
+const ORDER=["SC","CK","IB","RW"];
+const CODE={
+  "1.1":{side:"T",t:"Teachers let students make choices about how they use technology to meet learning objectives."},
+  "1.2":{side:"T",t:"Teachers use technology to create an environment of discourse and collaboration."},
+  "1.3":{side:"S",t:"Students engage in active learning and construct their own understanding."},
+  "1.4":{side:"S",t:"Students use collaborative tools, interactive learning, information, and feedback to take ownership of their learning."},
+  "2.1":{side:"T",t:"Teachers guide students to use technology to access high-quality information and resources."},
+  "2.2":{side:"T",t:"Teachers select technology resources that help students connect new knowledge to existing knowledge."},
+  "2.3":{side:"S",t:"Students use the features of technology tools to create products that show newly constructed knowledge."},
+  "2.4":{side:"S",t:"Students use the features of specific technology tools designed to support higher-order thinking."},
+  "3.1":{side:"T",t:"Teachers create opportunities for students to use technology to think critically and engage in productive dialogue."},
+  "3.2":{side:"T",t:"Teachers use technology resources to strengthen their own questioning strategies and support engagement."},
+  "3.3":{side:"S",t:"Students use digital resources to explore, ask, and answer open-ended questions through research and analysis."},
+  "3.4":{side:"S",t:"Students take part in collaborative discussion, live or asynchronous, through multimodal tools."},
+  "4.1":{side:"T",t:"Teachers design learning experiences that use technology to explore the world at large."},
+  "4.2":{side:"T",t:"Teachers help students amplify their voices and share learning with real-world audiences."},
+  "4.3":{side:"S",t:"Students connect personal experiences and interests and apply their knowledge to real-world situations."},
+  "4.4":{side:"S",t:"Students use technology to create high-quality final products for audiences beyond the classroom."}
+};
+const roomOf=c=>ORDER[parseInt(c)-1];
+
+/* fx: up = strengthens a room, dmg = undermines a room, shiny = changes nothing */
+const LESSONS=[
+{
+  title:"The Weather Watchers",grade:"2nd grade science",
+  before:"Every morning, students step outside, record the weather in paper journals, and compare notes with a partner. At the end of the month, they figure out the patterns themselves.",
+  bp:["CK"],
+  barb:"One room on this blueprint: the kids build the pattern themselves. Make that part better.",
+  cards:[
+    {icon:"📈",side:"S",cost:4,title:"Self-graphing class sheet",text:"Each morning a student enters the reading into a shared sheet that graphs itself. The class explains what the graph shows.",fx:"up",code:"2.4",quip:"The graph draws itself and the kids still have to explain it. That's the good kind of lazy."},
+    {icon:"📷",side:"S",cost:3,title:"Sky photo journal",text:"Students snap a sky photo on a tablet every day, then sort the photos to find cloud patterns.",fx:"up",code:"2.3",quip:"Real sky, real photos, kids doing the sorting. Upgrade."},
+    {icon:"📱",side:"S",cost:2,title:"Weather app answers",text:"Skip going outside. Students copy today's forecast from a weather app.",fx:"dmg",room:"CK",code:"2.3",quip:"They stopped looking at the sky. The sky noticed. That's a crack in the wall."},
+    {icon:"🤖",side:"T",cost:1,title:"AI pattern finder",text:"The teacher runs the journals through AI, which reports the month's pattern to the class.",fx:"dmg",room:"CK",code:"2.4",quip:"The AI found the pattern. The kids found their snack. Crack."},
+    {icon:"☁️",side:"T",cost:2,title:"Talking weather mascot",text:"An animated cartoon cloud reads the date and weather aloud every morning.",fx:"shiny",quip:"A talking cloud. Adorable. The lesson didn't change one bit."},
+    {icon:"🎥",side:"T",cost:3,title:"Video call a meteorologist",text:"A local TV meteorologist joins by video to answer the class's questions.",fx:"up",code:"4.1",quip:"Lovely sunroom. Nobody ordered a sunroom. Real-World isn't on this blueprint."}
+  ]
+},{
+  title:"The Dust Bowl Question",grade:"11th grade U.S. History",
+  before:"Students investigate a question: was the Dust Bowl a natural disaster or human-made? They dig through sources, argue it out, and connect it to drought on Oklahoma farms today.",
+  bp:["IB","RW"],
+  barb:"Two solid rooms here. Your tech should make them stronger, not do the thinking for them.",
+  cards:[
+    {icon:"🔍",side:"S",cost:4,title:"Digital archive dig",text:"Students zoom into Library of Congress photos and read WPA oral histories for evidence.",fx:"up",code:"3.3",quip:"Zooming into a 1936 photo to find evidence. That's inquiry with better tools."},
+    {icon:"🌧️",side:"S",cost:4,title:"Then vs. now data",text:"Students compare 1930s rainfall records to this year's Oklahoma Mesonet drought data.",fx:"up",code:"4.3",quip:"1930s rainfall next to this year's drought map. Now it's their state, not the textbook's."},
+    {icon:"🎙️",side:"S",cost:5,title:"Historical society podcast",text:"Students interview an older relative about hard times and produce an episode for the county historical society.",fx:"up",code:"4.4",quip:"Great-grandma on a podcast for the historical society. Real audience. Pricey, though."},
+    {icon:"🧩",side:"T",cost:3,title:"Tool choice board",text:"Students pick which tool they'll use to present their argument.",fx:"up",code:"1.1",quip:"Nice choice board. Wrong renovation. Student-Centered isn't on this blueprint."},
+    {icon:"🤖",side:"S",cost:1,title:"AI study buddy",text:"A chatbot gives students the five causes of the Dust Bowl, ready to memorize.",fx:"dmg",room:"IB",code:"3.3",quip:"The chatbot answered the question so the students don't have to. That was the whole lesson. Crack."},
+    {icon:"🎵",side:"T",cost:2,title:"Kahoot review",text:"End the investigation with a Kahoot on the causes.",fx:"shiny",quip:"Same causes, now with a countdown and anxiety music. Nothing changed."}
+  ]
+},{
+  title:"The Playground Pitch",grade:"3rd grade reading",
+  before:"Students read a story about a town building a park. Then groups choose one change for the school playground, find out what classmates want, and present their idea to the principal.",
+  bp:["SC","IB","RW"],
+  barb:"Three rooms on this one, same $10K. Not much room for mistakes. Choose carefully.",
+  cards:[
+    {icon:"🧰",side:"T",cost:3,title:"Groups pick their tools",text:"Each group chooses how to make its case: slideshow, short video, or poster with a voice recording.",fx:"up",code:"1.1",quip:"Groups choosing their own tools. Student-Centered, upgraded."},
+    {icon:"📊",side:"S",cost:3,title:"Class survey",text:"Groups build a quick online survey for other classes and graph the votes.",fx:"up",code:"3.3",quip:"Third graders collecting real data from real humans. Upgrade."},
+    {icon:"🎬",side:"S",cost:3,title:"Video pitch with a reply",text:"Groups record a one-minute pitch. The principal watches it and records a reply.",fx:"up",code:"4.4",quip:"The principal has to watch it AND reply. I love that for the principal."},
+    {icon:"📄",side:"T",cost:1,title:"Fill-in slide template",text:"Every group gets the same slideshow template: same slides, same order, fill in the blanks.",fx:"dmg",room:"SC",code:"1.1",quip:"Same template, same slides, same order. You just removed the choosing. Crack."},
+    {icon:"🤖",side:"S",cost:2,title:"AI picks for you",text:"An AI tool suggests the best playground upgrade so groups can skip asking classmates.",fx:"dmg",room:"IB",code:"3.3",quip:"The AI picked the upgrade. So what were the kids researching? Crack."},
+    {icon:"⭐",side:"T",cost:2,title:"Points for every slide",text:"A rewards app gives each group points for every slide it finishes.",fx:"shiny",quip:"Kayden's group has 400 points and no idea what they decided. Nothing changed."}
+  ]
+}];
+
+const RATINGS=[
+  {stars:3,title:"Cover of Better Lessons & Gardens",react:"BEST. LESSON. EVER!",barb:"Every blueprint room upgraded and nothing broken. I have nothing to write down."},
+  {stars:2,title:"Sold over asking",react:"Ooh, nicer!",barb:"Better than it was. Not every room got love, but nothing's broken."},
+  {stars:1,title:"Priced to move",react:"Wait... same lesson?",barb:"You spent money. The lesson is either the same or you broke something. Neither goes on the brochure."},
+  {stars:0,title:"Condemned",react:"Who broke the wall?!",barb:"The tech made this lesson worse. Please step away from the lesson."}
+];
+const FINALS=[
+  {min:9,title:"Master Renovator",barb:"Nine for nine. I'd like your business card. I don't ask for business cards."},
+  {min:7,title:"Licensed Lesson Contractor",barb:"Solid work. Your lessons would pass in most counties, including mine, and mine is strict."},
+  {min:4,title:"Apprentice Renovator",barb:"You know good tech when you see it. Now watch for the tech that does the thinking for them."},
+  {min:0,title:"Enthusiastic DIYer",barb:"Lots of energy. Some of it went into talking clouds. Open the code book and try again."}
+];
+
+const $=id=>document.getElementById(id);
+const BUDGET=10, FEE=1;
+let round=0,stars=0,deck=[],owned=[],spent=0,revealed=false,timers=[];
+const reduce=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+const money=k=>"$"+k+"K";
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id));window.scrollTo({top:0});}
+function dots(){$("dots").innerHTML=LESSONS.map((_,i)=>`<i class="${i<round?'done':i===round?'now':''}"></i>`).join("");$("scoreLabel").textContent=`Stars: ${stars}`;}
+function say(t){$("barbSays").textContent=t;const b=$("bubble");b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop");}
+
+/* build rooms */
+$("rooms").innerHTML=ORDER.map(r=>{const R=ROOMS[r],x=R.x,y=R.y;
+  const sp=[[x+150,y+24],[x+174,y+44],[x+132,y+50]].map(([a,b])=>`<path class="spark" d="M${a} ${b-8} L${a+2.5} ${b-2.5} L${a+8} ${b} L${a+2.5} ${b+2.5} L${a} ${b+8} L${a-2.5} ${b+2.5} L${a-8} ${b} L${a-2.5} ${b-2.5}Z" fill="#fff"/>`).join("");
+  return `<g class="room" id="room-${r}">
+    <rect class="base" x="${x}" y="${y}" width="196" height="106"/>
+    <rect class="paint" x="${x}" y="${y}" width="196" height="106" fill="${R.hex}"/>
+    ${sp}
+    <path class="crack" d="M${x+196} ${y+20} L${x+168} ${y+36} L${x+178} ${y+54} L${x+146} ${y+66} L${x+158} ${y+86} L${x+120} ${y+106} M${x+178} ${y+54} L${x+196} ${y+62} M${x+146} ${y+66} L${x+124} ${y+58}" stroke="#1d2433" stroke-width="3.5" fill="none" stroke-linejoin="round"/>
+    <text class="rlabel" x="${x+14}" y="${y+28}">${R.l1}</text><text class="rlabel" x="${x+14}" y="${y+49}">${R.l2}</text>
+    <text class="offnote" x="${x+14}" y="${y+88}"></text>
+    <g class="stamp"><rect x="${x+66}" y="${y+62}" width="122" height="32" rx="5" fill="rgba(255,255,255,.9)" stroke-width="4"/><text x="${x+127}" y="${y+85}" text-anchor="middle" font-family="Rockwell,Georgia,serif" font-weight="900" font-size="18"></text></g>
+  </g>`;}).join("");
+
+/* crowd of students for the reveal */
+const KIDC=["#e5533d","#3f8fc8","#8e44ad","#2e9e5b","#f39c12","#d35490"];
+const SKIN=["#c68b59","#f1c27d","#8d5524"];
+$("crowd").innerHTML=KIDC.map((c,i)=>`<g transform="translate(${250+i*60},424) scale(1.5)"><g class="kid">
+  <rect x="-5" y="-17" width="10" height="13" rx="3" fill="${c}"/>
+  <rect x="-4" y="-5" width="3" height="6" fill="#1d2433"/><rect x="1" y="-5" width="3" height="6" fill="#1d2433"/>
+  <circle cx="0" cy="-22" r="5.5" fill="${SKIN[i%3]}"/></g></g>`).join("");
+
+function setBus(x,instant){const b=$("bus");
+  if(instant){b.style.transition="none";b.style.transform=`translate(${x}px,0)`;void b.getBoundingClientRect();b.style.transition="";}
+  else b.style.transform=`translate(${x}px,0)`;}
+
+function analyze(){
+  const L=LESSONS[round];const up={},dmg={},built={},shiny=[];
+  owned.map(i=>deck[i]).forEach(c=>{
+    if(c.fx==="up"){const r=roomOf(c.code);(L.bp.includes(r)?up:built)[r]=(L.bp.includes(r)?up:built)[r]||[];(L.bp.includes(r)?up:built)[r].push(c);}
+    else if(c.fx==="dmg"){(dmg[c.room]=dmg[c.room]||[]).push(c);}
+    else shiny.push(c);
+  });
+  const state={};
+  L.bp.forEach(r=>state[r]=dmg[r]?"dmg":up[r]?"up":"plain");
+  const U=L.bp.filter(r=>state[r]==="up").length, D=L.bp.filter(r=>state[r]==="dmg").length;
+  const tried=L.bp.some(r=>up[r]);
+  const st = D>0 ? (tried?1:0) : (U===L.bp.length?3:U>0?2:1);
+  return {L,up,dmg,built,shiny,state,U,D,stars:st};
+}
+
+function effectOf(c){
+  const L=LESSONS[round];
+  if(c.fx==="up"){const r=roomOf(c.code);return L.bp.includes(r)?{txt:`Upgraded ${ROOMS[r].short}`,bg:ROOMS[r].color,cls:"good"}:{txt:"Not on the blueprint",bg:"var(--grey)",cls:"meh"};}
+  if(c.fx==="dmg")return {txt:`Cracked ${ROOMS[c.room].short}`,bg:"var(--red)",cls:"bad"};
+  return {txt:"No change",bg:"var(--grey)",cls:"meh"};
+}
+
+function startRound(){
+  timers.forEach(clearTimeout);timers=[];
+  const L=LESSONS[round];deck=shuffle(L.cards);owned=[];spent=0;revealed=false;
+  $("kicker").textContent=`Property ${round+1} of 3: ${L.grade}`;
+  $("lTitle").textContent=L.title;$("lBefore").textContent=L.before;
+  $("blueprint").innerHTML=`<span>Blueprint:</span>`+L.bp.map(r=>`<span class="rm" style="background:${ROOMS[r].color}">${ROOMS[r].name}</span>`).join("");
+  ORDER.forEach(r=>{const g=$("room-"+r);g.setAttribute("class","room "+(L.bp.includes(r)?"bp":"off"));
+    g.querySelector(".offnote").textContent=L.bp.includes(r)?"":"Not on this blueprint";
+    g.querySelector(".stamp").classList.remove("show");});
+  $("chant").classList.remove("show");$("crowd").setAttribute("class","");$("reaction").setAttribute("class","");
+  setBus(-620,true);
+  $("shop").hidden=false;$("result").hidden=true;
+  renderCards();update();say(L.barb);dots();show("s-game");
+}
+
+function renderCards(){
+  const left=BUDGET-spent;
+  $("cards").innerHTML=deck.map((c,i)=>{
+    const isOwned=owned.includes(i);const cls=["card"];let fx="";
+    if(isOwned){const e=effectOf(c);cls.push("owned",e.cls);fx=`<span class="fx" style="background:${e.bg}">${e.txt}</span>`;}
+    else if(c.cost>left)cls.push("pricey");
+    return `<button class="${cls.join(" ")}" data-i="${i}" aria-pressed="${isOwned}" aria-label="${c.title}, ${money(c.cost)}, ${c.side==='T'?'teacher':'student'} move${isOwned?', bought':''}">
+      <span class="top"><span class="icon" aria-hidden="true">${c.icon}</span><span class="price">${isOwned?"Bought":money(c.cost)}</span></span>
+      <h3>${c.title}</h3><p>${c.text}</p>${fx}
+      <span class="side ${c.side}">${c.side==="T"?"🔨 Teacher move":"🎒 Student move"}</span></button>`;}).join("");
+  $("cards").querySelectorAll(".card").forEach(b=>b.addEventListener("click",()=>clickCard(+b.dataset.i)));
+}
+function shake(i){const b=$("cards").querySelector(`[data-i="${i}"]`);if(!b)return;b.classList.remove("shake");void b.offsetWidth;b.classList.add("shake");}
+
+function clickCard(i){
+  if(revealed)return;
+  const c=deck[i];const at=owned.indexOf(i);
+  if(at>-1){
+    owned.splice(at,1);spent-=(c.cost-FEE);
+    say(`Returned. Restocking fee: ${money(FEE)}. Barb takes cash.`);
+  }else{
+    if(c.cost>BUDGET-spent){say(`That's ${money(c.cost)}. You have ${money(BUDGET-spent)}. Return something or move the bus.`);shake(i);return;}
+    owned.push(i);spent+=c.cost;say(c.quip);
+  }
+  renderCards();update();
+  const nb=$("cards").querySelector(`[data-i="${i}"]`);if(nb)nb.focus();
+}
+
+function update(){
+  const left=BUDGET-spent;
+  $("amt").textContent=money(left);
+  $("meter").style.width=Math.max(0,left/BUDGET*100)+"%";
+  $("meter").style.background=left<=2?"var(--red)":left<=5?"var(--ck)":"var(--green)";
+  const A=analyze();
+  ORDER.forEach(r=>{const g=$("room-"+r);
+    if(A.L.bp.includes(r)){g.classList.toggle("up",A.state[r]==="up");g.classList.toggle("dmg",A.state[r]==="dmg");}
+    else{const b=!!A.built[r];g.classList.toggle("built",b);g.querySelector(".offnote").textContent=b?"Nobody ordered this":"Not on this blueprint";}
+  });
+  const perfect=A.stars===3;
+  $("roof").setAttribute("fill",perfect?"#e0be4c":"#7a6f66");
+  $("flowers").classList.toggle("on",perfect);$("deadplant").classList.toggle("off",perfect);
+  $("busBtn").disabled=owned.length===0;
+}
+
+function later(fn,ms){timers.push(setTimeout(fn,reduce()?Math.min(ms,50):ms));}
+
+function reveal(){
+  if(revealed||!owned.length)return;
+  revealed=true;$("busBtn").disabled=true;
+  $("cards").querySelectorAll(".card").forEach(b=>b.disabled=true);
+  const A=analyze();stars+=A.stars;const R=RATINGS.find(x=>x.stars===A.stars);
+  $("scene").scrollIntoView({behavior:reduce()?"auto":"smooth",block:"center"});
+  say("The students are on the bus. On three...");
+  setBus(150);
+  later(()=>{$("chant").classList.add("show");say("MOVE. THAT. BUS.");},1400);
+  later(()=>{setBus(900);},2500);
+  later(()=>{$("chant").classList.remove("show");$("crowd").setAttribute("class","show"+(A.stars>=2?" cheer":""));},3200);
+  A.L.bp.forEach((r,k)=>later(()=>{
+    const st=$("room-"+r).querySelector(".stamp");const s=A.state[r];
+    const txt=s==="up"?"UPGRADED":s==="dmg"?"CRACKED":"UNCHANGED";
+    const col=s==="up"?"#1d7a3a":s==="dmg"?"#c8102e":"#5a6375";
+    st.querySelector("text").textContent=txt;st.querySelector("text").setAttribute("fill",col);st.querySelector("rect").setAttribute("stroke",col);
+    st.classList.add("show");
+  },3700+k*400));
+  const tEnd=3700+A.L.bp.length*400+200;
+  later(()=>{$("reactText").textContent=R.react;$("reaction").setAttribute("class","show");},tEnd);
+  later(()=>showResult(A,R),tEnd+300);
+}
+
+function showResult(A,R){
+  say(R.barb);dots();
+  const L=A.L;
+  const rows=L.bp.map(r=>{
+    const s=A.state[r];
+    const msg=s==="up"?`Upgraded by ${A.up[r].map(c=>"\u201c"+c.title+"\u201d").join(" and ")}.`
+      :s==="dmg"?`Cracked by ${A.dmg[r].map(c=>"\u201c"+c.title+"\u201d").join(" and ")}. The tech did the students' part.${A.up[r]?" Your good upgrade can't paint over a crack.":""}`
+      :"Still there, but none of your tech helped it.";
+    return `<li><span class="mk ${s==='up'?'ok':s==='dmg'?'no':'eh'}">${s==='up'?'✓':s==='dmg'?'✗':'–'}</span><span><b>${ROOMS[r].name}</b>${msg}</span></li>`;}).join("");
+  const extras=[];
+  Object.keys(A.built).forEach(r=>A.built[r].forEach(c=>extras.push(`<li><span class="mk eh">○</span><span><b>Off the blueprint</b>\u201c${c.title}\u201d is a fine idea for ${ROOMS[r].name}. This lesson didn't need it.</span></li>`)));
+  A.shiny.forEach(c=>extras.push(`<li><span class="mk eh">○</span><span><b>Shiny, empty</b>\u201c${c.title}\u201d changed nothing about how students learn.</span></li>`));
+  const report=owned.map(i=>deck[i]).filter(c=>c.code).map(c=>{
+    const verb=c.fx==="dmg"?"Undermines":"Supports";
+    return `<p><b>${c.title}.</b> ${verb} code ${c.code} (${CODE[c.code].side==="T"?"teacher":"student"}): ${CODE[c.code].t}</p>`;}).join("")||"<p>Nothing you bought touched the code.</p>";
+  $("result").innerHTML=`
+    <div class="stars" aria-label="${A.stars} of 3 stars">${"★".repeat(A.stars)}<span class="dim">${"★".repeat(3-A.stars)}</span></div>
+    <h3>${R.title}</h3>
+    <p class="verdict">Spent ${money(spent)} of ${money(BUDGET)}.</p>
+    <ul class="checks">${rows}${extras.join("")}</ul>
+    <details><summary>Read the inspection report (code citations)</summary>${report}</details>
+    <button class="btn" id="nextBtn" style="width:100%">${round<LESSONS.length-1?"Next property":"See final results"}</button>`;
+  $("shop").hidden=true;$("result").hidden=false;
+  $("nextBtn").onclick=next;$("nextBtn").focus({preventScroll:true});
+  if(A.stars===3&&!reduce())confetti();
+}
+
+function next(){
+  round++;
+  if(round<LESSONS.length){startRound();return;}
+  const F=FINALS.find(x=>stars>=x.min);
+  $("fScore").textContent=`${stars}/9 ★`;$("fTitle").textContent=F.title;$("fBarb").textContent=`Barb: \u201c${F.barb}\u201d`;
+  dots();show("s-final");if(stars>=7&&!reduce())confetti();
+}
+
+$("cbSecs").innerHTML=ORDER.map(r=>{
+  const codes=Object.keys(CODE).filter(c=>roomOf(c)===r);
+  const col=s=>codes.filter(c=>CODE[c].side===s).map(c=>`<p>${CODE[c].t}</p>`).join("");
+  return `<div class="cb-sec" style="border-color:${ROOMS[r].color};background:${ROOMS[r].bg}">
+    <h3>${ROOMS[r].name}</h3>
+    <div class="cb-cols"><div><h4>🔨 What teachers are doing</h4>${col("T")}</div><div><h4>🎒 What students are doing</h4>${col("S")}</div></div></div>`;}).join("");
+
+function confetti(){
+  const cv=$("confetti"),x=cv.getContext("2d");cv.width=innerWidth;cv.height=innerHeight;
+  const cols=["#d9545e","#e9a52b","#6f9d33","#3f8fc8","#f5c518","#ffffff"];
+  const P=Array.from({length:170},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*.5,vx:(Math.random()-.5)*4,vy:2+Math.random()*4,r:Math.random()*6.28,vr:(Math.random()-.5)*.3,w:6+Math.random()*8,h:4+Math.random()*6,c:cols[Math.floor(Math.random()*cols.length)]}));
+  let f=0;(function tick(){x.clearRect(0,0,cv.width,cv.height);
+    P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.05;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.w/2,-p.h/2,p.w,p.h);x.restore();});
+    if(++f<210)requestAnimationFrame(tick);else x.clearRect(0,0,cv.width,cv.height);})();
+}
+
+$("start").onclick=()=>{round=0;stars=0;startRound();};
+$("again").onclick=()=>{round=0;stars=0;startRound();};
+$("busBtn").onclick=reveal;
+$("openCode").onclick=()=>$("codebook").showModal();
+$("peek").onclick=()=>$("codebook").showModal();
+$("closeCode").onclick=()=>$("codebook").close();
+$("codebook").addEventListener("click",e=>{if(e.target.id==="codebook")$("codebook").close();});
+dots();
+</script>
+</body>
+</html>
